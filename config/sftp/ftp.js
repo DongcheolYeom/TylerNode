@@ -8,9 +8,9 @@ module.exports = function(){
 	    port: '2211',
 	    username: "gunman",
 	    password: "!@#dlgo544*()"
-	}).then(() => {
+	}).then(function() {
 	    console.log("FTP Connected.");
-	}).catch((err) => {
+	}).catch(function(err) {
 	    console.log(err, 'catch error');
 	});
 	

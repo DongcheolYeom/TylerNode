@@ -26,10 +26,10 @@ module.exports = function(wasType){
          username: 'gunman',
          password: '!@#xlahs700*()'*/
 
-    }).then(() => {
+    }).then(function() {
         console.log("Core Was Connected.");
         return ssh;
-    }).catch((err) => {
+    }).catch(function(err) {
         console.log(err, 'catch error');
     });
 };

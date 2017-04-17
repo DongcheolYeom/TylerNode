@@ -14,10 +14,10 @@ route.post('/ajaxXmlList', function(req, res){
 	var ftpPath = req.body.ftpDectoryPath;
 	console.log("FTP Path : " + ftpPath);
 
-	sftp.list(ftpPath).then((result) => {
+	sftp.list(ftpPath).then(function(result) {
 		res.status(200).send(JSON.stringify(result));
 		console.log("== FTP END ==");
-	}).catch((err) => {
+	}).catch(function(err) {
 	    console.log(err, 'catch error');
 	});
 });
@@ -42,7 +42,7 @@ route.post('/ajaxXmlInfo', function(req, res) {
         options = {encoding: 'utf16le'};
 	}
 
-	sftp.get(ftpPath, options).then((result) => {
+	sftp.get(ftpPath, options).then(function(result) {
 		var writeStream = fs.createWriteStream(localPath);
     	result.pipe(writeStream);
 
@@ -60,7 +60,7 @@ route.post('/ajaxXmlInfo', function(req, res) {
     	});
 
         //res.status(200).type('xml').send(fs.readFileSync('D:/Dev/61_6251.xml', {encoding: 'utf-8'}));
-	}).catch((err) => {
+	}).catch(function(err) {
 	    console.log(err, 'catch error');
 	});
 });
