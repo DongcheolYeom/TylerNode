@@ -1,0 +1,70 @@
+<html>
+<head>
+	<% include ../partials/head %>
+</head>
+<body>
+
+	<header>
+		<% include ../partials/header %>
+	</header>
+
+	<main class="container">
+		<div class="section">
+			<h5>XML Analysis<i class="material-icons small">input</i></h5>
+			<div class="row">
+				<form action="/" method="post" class="col s12">
+					<div class="row">
+						<div class="input-field col s3">
+							<select id="serverType">
+								<option id=""><h5 class="center-align">서버유형</h5></option>
+								<option id="stage"><h5 class="center-align">스테이지</h5></option>
+								<option id="production"><h5 class="center-align">운영</h5></option>
+							</select>
+						</div>
+						<div class="input-field col s3">
+							<select id="mediaType">
+								<option id=""><h5  class="center-align">매체명</h5></option>
+								<option id="joongang"><h5 class="center-align">중앙일보</h5></option>
+								<option id="sunday"><h5 class="center-align">중앙선데이</h5></option>
+							</select>
+						</div>
+						<div class="input-field col s3">
+							<select id="releaseType">
+								<option id=""><h5  class="center-align">출고유형</h5></option>
+								<option id="onlineArticle"><h5 class="center-align">온라인</h5></option>
+								<option id="offlineArticle"><h5 class="center-align">지면</h5></option>
+							</select>
+						</div>
+						<div class="input-field col s3">
+							<input type="date" id="searchDate" class="datepicker">
+				            <label for="input_text">조회일</label>
+				        </div>
+					</div>
+					<div class="row">
+						<div class="col s12 right-align">
+							<a id="searchBtn" class="btn waves-effect waves-light blue darken-1" type="submit">SEARCH
+								<i class="material-icons right">sync</i>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="divider"></div>
+		</div>
+		<div class="section" id="xmlFileList"></div>
+		<div class= "right" id="pagingIndex"></div>
+		<div id="xmlModal" class="modal modal-fixed-footer">
+			<div class="modal-content">
+    			<p class="xmlContent"></p>
+  			</div>
+  			<div class="modal-footer">
+    			<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">확인</a>
+  			</div>
+		</div>
+	</main>
+	
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+<head>
+	<% include ../partials/head %>
+</head>
+<body>
+
+	<header>
+		<% include ../partials/header %>
+	</header>
+
+	<main class="container">
+
+		<div class="section">
+			<h5>Log Analysis<i class="material-icons small">input</i></h5>
+			<div class="row">
+				<form action="/" method="post" class="col s12">
+					<div class="row">
+						<div class="input-field col s3">
+							<select id="wasServerType">
+								<option id=""><h5 class="center-align">서버유형</h5></option>
+								<option id="corewas01"><h5 class="center-align">CoreWas01</h5></option>
+								<option id="corewas02"><h5 class="center-align">CoreWas02</h5></option>
+							</select>
+						</div>
+						<div class="input-field col s9">
+							<input id="articleId" type="text" class="validate">
+							<label class="active" for="articleId">기사아이디</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12 right-align">
+							<a id="releaseLogBtn" class="btn waves-effect waves-light blue darken-1" type="submit">출고확인
+								<i class="material-icons right">sync</i>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="divider"></div>
+			<div class="row">
+				<div class="section col s12" id="releaseLogArea"></div>
+			</div>
+		</div>
+	</main>
+	
+	<footer>
+		<% include ../partials/footer %>
+	</footer>
+</body>
+</html>

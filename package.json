@@ -1,0 +1,25 @@
+{
+  "name": "TylerNode",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "ejs": "^2.5.5",
+    "express": "^4.14.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "iconv-lite": "^0.4.15",
+    "jquery": "^3.1.1",
+    "materialize-css": "^0.98.0",
+    "mysql": "^2.12.0",
+    "node-ssh": "^4.0.1",
+    "path": "^0.12.7",
+    "pretty-data": "^0.40.0",
+    "ssh2-sftp-client": "^1.0.5",
+    "xml": "^1.0.1",
+    "xml-stream": "^0.4.5"
+  }
+}
