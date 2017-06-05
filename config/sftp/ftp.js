@@ -1,13 +1,16 @@
-var client = require('ssh2-sftp-client');
+var client = require('ssh2-sftp-client')
+	, config = require('../properties/ftp.json');
 
 //FTP Connection
 module.exports = function(){
 	let sftp = new client();
+
 	sftp.connect({
-	    host: "10.50.23.88",
-	    port: '2211',
-	    username: "gunman",
-	    password: "!@#dlgo544*()"
+	    host: config.ftpServer.host,
+	    port: config.ftpServer.port,
+	    username: config.ftpServer.username,
+	    password: config.ftpServer.password
+
 	}).then(function() {
 	    console.log("FTP Connected.");
 	}).catch(function(err) {

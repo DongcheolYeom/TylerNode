@@ -1,11 +1,26 @@
-/**
- * http://usejsdoc.org/
- */
-var fileName;
-var xmlFileInfo;
-var mediaTypeVal;
-var releaseTypeVal;
-var searchDate;
+var config = {
+    joongang : "중앙일보",
+    sunday : "중앙선데이",
+    stage : "스테이지",
+    onLine : "온라인",
+    onLineFirst : "온라인(속보)",
+    paper : "지면",
+    ftpRootPath : "/trans",
+    stagePath : "/stg/deploy",
+    productionPath : "/svc/deploy",
+    joongangOnLinePath : "/1/backup",
+    joongangOnLineFirstPath : "/3/backup",
+    joongangPaperPath : "/D001/backup",
+    sundayOnLinePath : "/61/backup",
+    sundayPaperPath : "/W005/backup"
+};
+
+var fileName,
+    xmlFileInfo,
+    mediaTypeVal,
+    releaseTypeVal,
+    searchDate,
+    block;
 
 $(function() {
 	$(document).on('click', '#xmlFileList tbody tr', function(){
@@ -14,7 +29,7 @@ $(function() {
 
     $(document).on("click","#pageIndexList li",function(){
         var pageIdx = $(this).text();
-        printXmlList(xmlFileInfo, pageIdx-1);
+        printXmlList(xmlFileInfo, pageIdx);
     });
 });
 
@@ -47,49 +62,20 @@ $('#xmlModal').modal({
 
     ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
         $('.xmlcontent').text('');
+
         var serverTypeId = $('#serverType option:selected').attr('id');
         var mediaTypeId = $('#mediaType option:selected').attr('id');
         var releaseTypeId = $('#releaseType option:selected').attr('id');
-        searchDate = $('#searchDate').val();
         var serverTypeVal = $('#serverType option:selected').val();
-        mediaTypeVal = $('#mediaType option:selected').val();
         var releaseTypeVal = $('#releaseType option:selected').val();
+        searchDate = $('#searchDate').val();
+        mediaTypeVal = $('#mediaType option:selected').val();
 
         var searchDateSplit = searchDate.split('-');
 
-        var ftpDectoryPath = "/trans";
-        if('' == serverTypeId){
-            alert('서버유형을 선택하세요.');
-            return;
-        }else{
-            if('스테이지' == serverTypeVal){
-                ftpDectoryPath += "/stg/deploy";
-            }else{
-                ftpDectoryPath += "/svc/deploy";
-            }
-        }
-
-        if('' == mediaTypeId){
-            alert('매체명을 선택하세요.');
-            return;
-        }
-
-        if('' == releaseTypeId){
-            alert('출고유형을 선택하세요.');
-            return;
-        }
-
-        if('중앙일보' == mediaTypeVal && '온라인' == releaseTypeVal){
-            ftpDectoryPath += "/1/backup";
-        }else if('중앙일보' == mediaTypeVal && '지면' == releaseTypeVal){
-            ftpDectoryPath += "/D001/backup";
-        }else if('중앙선데이' == mediaTypeVal && '온라인' == releaseTypeVal){
-            ftpDectoryPath += "/61/backup";
-        }else{
-            ftpDectoryPath += "/W005/backup";
-        }
-
-        ftpDectoryPath += "/" + searchDateSplit[0] + searchDateSplit[1] + "/" + searchDateSplit[2] + "/" + fileName;
+        validParam(serverTypeId, mediaTypeId, releaseTypeId, searchDate);
+        var ftpDectoryPath = getFTPDectoryPath(searchDateSplit, serverTypeVal, mediaTypeVal, releaseTypeVal);
+        console.log("====" + ftpDectoryPath);
 
       	$.ajax({
     	  	type:'POST',
@@ -110,54 +96,20 @@ $('#xmlModal').modal({
 });
 
 $('#searchBtn').click(function(){
+    this.fileName = null;
 	var serverTypeId = $('#serverType option:selected').attr('id');
 	var mediaTypeId = $('#mediaType option:selected').attr('id');
 	var releaseTypeId = $('#releaseType option:selected').attr('id');
-	searchDate = $('#searchDate').val();
 	var serverTypeVal = $('#serverType option:selected').val();
-	mediaTypeVal = $('#mediaType option:selected').val();
+    searchDate = $('#searchDate').val();
+    mediaTypeVal = $('#mediaType option:selected').val();
 	releaseTypeVal = $('#releaseType option:selected').val();
 
 	var searchDateSplit = searchDate.split('-');
 
-	var ftpDectoryPath = "/trans";
-	if('' == serverTypeId){
-		alert('서버유형을 선택하세요.');
-		return;
-	}else{
-		if('스테이지' == serverTypeVal){
-			ftpDectoryPath += "/stg/deploy";
-		}else{
-			ftpDectoryPath += "/svc/deploy";
-		}
-	}
-
-	if('' == mediaTypeId){
-		alert('매체명을 선택하세요.');
-		return;
-	}
-
-	if('' == releaseTypeId){
-		alert('출고유형을 선택하세요.');
-		return;
-	}
-
-	if('중앙일보' == mediaTypeVal && '온라인' == releaseTypeVal){
-		ftpDectoryPath += "/1/backup";
-	}else if('중앙일보' == mediaTypeVal && '지면' == releaseTypeVal){
-		ftpDectoryPath += "/D001/backup";
-	}else if('중앙선데이' == mediaTypeVal && '온라인' == releaseTypeVal){
-		ftpDectoryPath += "/61/backup";
-	}else{
-		ftpDectoryPath += "/W005/backup";
-	}
-
-	if('' == searchDate){
-		alert('조회일을 선택하세요.');
-		return;
-	}else{
-		ftpDectoryPath += "/" + searchDateSplit[0] + searchDateSplit[1] + "/" + searchDateSplit[2];
-	}
+    validParam(serverTypeId, mediaTypeId, releaseTypeId, searchDate);
+    var ftpDectoryPath = getFTPDectoryPath(searchDateSplit, serverTypeVal, mediaTypeVal, releaseTypeVal);
+    console.log("====" + ftpDectoryPath);
 
 	$.ajax({
 		type:'POST',
@@ -165,7 +117,7 @@ $('#searchBtn').click(function(){
 		data : {"ftpDectoryPath" : ftpDectoryPath},
 		success:function(data){
 			xmlFileInfo = $.parseJSON(data);
-            printXmlList(xmlFileInfo, 0);
+            printXmlList(xmlFileInfo, 1);
 		},
 		error:function(data) {
 			console.log("fail : " + data);
@@ -174,8 +126,43 @@ $('#searchBtn').click(function(){
 });
 
 function printXmlList(xmlFileInfo, pageIdx){
+    if('chevron_right' == pageIdx){
+        block++;
+    }else if('chevron_left' == pageIdx){
+        block--;
+    }else{
+        block = Math.ceil(pageIdx/10);
+    }
+
     var xmlListSize = xmlFileInfo.length;
-    var startIdx = pageIdx * 10;
+    var totalPage = Math.ceil(xmlListSize/10);
+
+    //현재 블럭에서 시작페이지 번호
+    var startPage = ((block - 1) * 10 ) + 1;
+    //현재 블럭에서 마지막 페이지 번호
+    var endPage = startPage + 10 - 1;
+
+    if (endPage > totalPage){
+        endPage = totalPage;
+    }
+
+    if('chevron_right' == pageIdx){
+        if(startPage > endPage){
+            block--;
+            return;
+        }else{
+            pageIdx = startPage;
+        }
+    }else if('chevron_left' == pageIdx){
+        if(block < 1){
+            block = 1;
+            return;
+        }else{
+            pageIdx = startPage;
+        }
+    }
+
+    var startIdx = (pageIdx-1) * 10;
 
     $('#xmlFileList').empty();
     $('#pagingIndex').empty();
@@ -201,7 +188,7 @@ function printXmlList(xmlFileInfo, pageIdx){
         html += '<td><a class="btn waves-effect waves-light" href="#xmlModal">보기</a></td>';
         html += '</tr>'
 
-        if(cnt == (pageIdx+1)*10){
+        if(cnt == (pageIdx * 10)){
             break;
         }
     }
@@ -211,22 +198,71 @@ function printXmlList(xmlFileInfo, pageIdx){
     $('#pageIndexList li').attr("class", "waves-effect");
     $(this).attr("class", "active");
 
-    var html_page = '<ul id="pageIndexList" class="pagination"><li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>';
-    var pageCnt = Math.ceil(xmlListSize/10);
-    for (var i = 0; i < pageCnt; i++) {
-        var cnt = i+1;
-
+    var htmlPage = '<ul id="pageIndexList" class="pagination"><li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>';
+    for (var i = startPage; i < endPage+1; i++) {
+        var cnt = i;
         if(i == pageIdx){
-            html_page += '<li class="active"><a href="#!">' + cnt + '</a></li>';
+            htmlPage += '<li class="active"><a href="#!">' + cnt + '</a></li>';
         }else{
-            html_page += '<li class="waves-effect"><a href="#!">' + cnt + '</a></li>';
+            htmlPage += '<li class="waves-effect"><a href="#!">' + cnt + '</a></li>';
         }
     }
-    html_page += '<li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li></ul>';
+    htmlPage += '<li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li></ul>';
 
     $('#xmlFileList').append(html);
-    $('#pagingIndex').append(html_page);
+    $('#pagingIndex').append(htmlPage);
 }
 
+function getFTPDectoryPath(searchDateSplit, serverTypeVal, mediaTypeVal, releaseTypeVal){
+    var ftpDectoryPath = config.ftpRootPath;
+
+    if(config.stage == serverTypeVal){
+        ftpDectoryPath += config.stagePath;
+    }else{
+        ftpDectoryPath += config.productionPath;
+    }
+
+    if(config.joongang == mediaTypeVal && config.onLine == releaseTypeVal){
+        ftpDectoryPath += config.joongangOnLinePath;
+    }else if(config.joongang == mediaTypeVal && config.onLineFirst == releaseTypeVal){
+        ftpDectoryPath += config.joongangOnLineFirstPath;
+    }else if(config.joongang == mediaTypeVal && config.paper == releaseTypeVal){
+        ftpDectoryPath += config.joongangPaperPath;
+    }else if(config.sunday == mediaTypeVal && config.onLine == releaseTypeVal){
+        ftpDectoryPath += config.sundayOnLinePath;
+    }else{
+        ftpDectoryPath += config.sundayPaperPath;
+    }
+
+    if(null != this.fileName){
+        ftpDectoryPath += "/" + searchDateSplit[0] + searchDateSplit[1] + "/" + searchDateSplit[2] + "/" + this.fileName;
+    }else{
+        ftpDectoryPath += "/" + searchDateSplit[0] + searchDateSplit[1] + "/" + searchDateSplit[2];
+    }
+
+    return ftpDectoryPath;
+}
+
+function validParam(serverTypeId, mediaTypeId, releaseTypeId, searchDate){
+    if('' == serverTypeId){
+        alert('서버유형을 선택하세요.');
+        return;
+    }
+
+    if('' == mediaTypeId){
+        alert('매체명을 선택하세요.');
+        return;
+    }
+
+    if('' == releaseTypeId){
+        alert('출고유형을 선택하세요.');
+        return;
+    }
+
+    if('' == searchDate){
+        alert('조회일을 선택하세요.');
+        return;
+    }
+}
 
 

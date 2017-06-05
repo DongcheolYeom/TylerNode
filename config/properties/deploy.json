@@ -1,0 +1,8 @@
+{
+  "deploy": {
+    "localPath": "D:/Dev/Source(Java)/workspace/TylerNode/xml/",
+    "onLine": "온라인",
+    "onLineFirst": "온라인(속보)",
+    "stage" : "스테이지"
+  }
+}

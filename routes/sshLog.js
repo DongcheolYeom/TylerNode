@@ -1,7 +1,7 @@
 var route = require('express').Router()
     , node_ssh = require('node-ssh')
     , ssh = new node_ssh()
-    , config = require('../config/ssh/ssh.json');
+    , config = require('../config/properties/ssh.json');
 
 route.get('/', function(req, res){
 	res.render('pages/sshLog', { layout: false });
@@ -15,47 +15,47 @@ route.post('/releaseLog', function(req, res){
     console.log("Article id : " + articleId);
 
     var wasConfig;
-    if("corewas01" == wasType){
-        wasConfig = config.corewas01;
+    if(config.WasName.PrdCoreWas01 == wasType){
+        wasConfig = config.WasType.PRD-CORE-WAS01;
+    }else if(config.WasName.PrdCoreWas02 == wasType){
+        wasConfig = config.WasType.PRD-CORE-WAS02;
     }else{
-        wasConfig = config.corewas02;
+        wasConfig = config.WasType.STG-CORE-WAS01;
     }
+
+    console.log("wasConfig : " + wasConfig.host);
     ssh.connect({
         host: wasConfig.host,
         port: wasConfig.port,
         username: wasConfig.username,
         password: wasConfig.password
 
-        /*
-         // CORE WAS 01
-         host: '10.50.23.85',
-         port: '2211',
-         username: 'gunman',
-         password: '!@#wkfk007*()'
-
-         // CORE WAS 02
-         host: '10.50.23.86',
-         port: '2211',
-         username: 'gunman',
-         password: '!@#xlahs700*()'*/
-
     }).then(function() {
-        console.log("Core Was Connected.");
+        console.log("PRD-CORE CONNECTED.");
 
         ssh.connection.exec('less /home/gunman/apache-tomcat-8.5.8/logs/joongang.log |grep ' + articleId, function (err, response) {
             response.on('data', function(data) {
-                console.log(data.toString());
                 res.status(200).send(data.toString());
-            });
-
-            response.on('end', function(){
+            }).on('end', function(){
+                console.log("PRD-CORE DISCONNECTED.");
                 ssh.dispose();
             });
-        });
+        })
+
+        /*var logMsg = [];
+        ssh.connection.exec('less /home/gunman/apache-tomcat-8.5.8/logs/joongang.log |grep' + articleId, function (err, response) {
+            response.on('data', function(data) {
+                console.log(data.toString());
+                /!*logMsg.push(data);*!/
+            }).on('end', function(){
+                /!*console.log(Buffer.concat(logMsg).toString());*!/
+                /!*res.status(200).send(Buffer.concat(logMsg).toString());*!/
+                ssh.dispose();
+            });
+        });*/
     }).catch(function(err) {
         console.log(err, 'catch error');
     });
-
 });
 
 module.exports = route;

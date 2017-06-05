@@ -32,7 +32,7 @@ $('#releaseLogBtn').click(function(){
 
             $('#releaseLogArea').empty();
             var html = '<i class="material-icons">done</i><span>출고로그</span>';
-            html += '<textarea class="materialize-textarea" name="releaseLog" id="releaseLog" rows="100" readonly>';
+            html += '<textarea class="materialize-textarea" name="releaseLog" id="releaseLog" rows="1000" readonly>';
             html += releaseLogInfo;
 			html += '</textarea>';
 
